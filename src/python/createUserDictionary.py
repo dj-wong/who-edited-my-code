@@ -1,4 +1,4 @@
-print("Create User Dictionary")
+# print("Create User Dictionary")
 
 # git log --pretty=format:%ae | grep '.*' | sort --unique
 # prints out all emails, then we can use github api to parse

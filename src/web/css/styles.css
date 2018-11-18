@@ -8,23 +8,8 @@ body {
     min-height: 100%;
 }
 
-.class-graph {
-    min-width: 100%;
-    min-height: 100%;
-}
-
-.node circle {
-    fill: #fff;
-    stroke: steelblue;
-    stroke-width: 3px;
-}
-
-.node text {
-    font: 12px sans-serif;
-}
-
-.link {
-    fill: none;
-    stroke: black;
-    stroke-width: 2px;
+.svg-container {
+    margin-top: 5px;
+    overflow: hidden;
+    border: solid 1px lightgrey;
 }

@@ -1,0 +1,19 @@
+{
+    "name": "who-edited-my-code",
+    "repository": "https://github.com/dj-wong/who-edited-my-code.git",
+    "dependencies": {
+        "concurrently": "^4.0.1",
+        "http-server": "^0.11.1",
+        "wait-on": "^3.2.0"
+    },
+    "engines": {
+        "node": ">= 0.4.1"
+    },
+    "scripts": {
+        "run-python-script": "./script.sh",
+        "start-server": "cd src/web && http-server -c-1",
+        "open": "concurrently 'npm run start-server' 'wait-on http://localhost:8080/ && open http://localhost:8080/'",
+        "concurrently-parse-open-server": "func() { npm run run-python-script \"$1\" && npm run open; }; func",
+        "start": "npm run concurrently-parse-open-server"
+    }
+}

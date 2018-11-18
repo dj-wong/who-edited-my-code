@@ -1,5 +1,7 @@
 import os
 import glob
+import re
+import argparse
 
 def get_parent_names(filepath):
     file = open(filepath)
@@ -13,7 +15,8 @@ def get_parent_names(filepath):
             current_line = line
 
             while "{" not in current_line:
-                current_line = current_line + " " + lines[current_index_to_check]
+                current_line = current_line + " " + \
+                    lines[current_index_to_check]
                 current_index_to_check = current_index_to_check + 1
 
             # Now that we have the whole class declaration line...
@@ -38,7 +41,8 @@ def get_parent_names(filepath):
                     for class_name in implements_classes[:-1]:
                         implements_classes_final.append(class_name)
 
-                    implements_classes_final.append(implements_classes[-1].strip(" {\n"))
+                    implements_classes_final.append(
+                        implements_classes[-1].strip(" {\n"))
 
                     return [extends_class] + implements_classes_final
 
@@ -47,7 +51,8 @@ def get_parent_names(filepath):
                 # line example: public class DetailActivity implements Interface1, Interface2 {
                 # implements_classes = ["public class DetailActivity ", " Interface1, Interface2 {"] ->
                 # "Interface1, Interface2 {" -> ["Interface1", "Interface2 {"]
-                implements_classes = current_line.split("implements")[1].strip().split(",")
+                implements_classes = current_line.split(
+                    "implements")[1].strip().split(",")
 
                 # Handling classes that implement more than one class
                 implements_classes_final = []
@@ -55,7 +60,8 @@ def get_parent_names(filepath):
                 for class_name in implements_classes[:-1]:
                     implements_classes_final.append(class_name)
 
-                implements_classes_final.append(implements_classes[-1].strip(" {\n"))
+                implements_classes_final.append(
+                    implements_classes[-1].strip(" {\n"))
 
                 return implements_classes_final
 
@@ -67,22 +73,42 @@ def get_parent_names(filepath):
     return []
 
 
-java_file_paths = glob.glob("/Users/allisonhamelin/Coding/Repos/CPSC410/github-plugin/**/*.java", recursive=True)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p', '--path', required=True)
 
-file_objects = []
+    io_args = parser.parse_args()
+    path = io_args.path
 
-for file_path in java_file_paths:
+    if path != "":
+        java_file_paths = glob.glob(
+            "../fastjson/src/main/**/*.java", recursive=True)
 
-    parent_ids = get_parent_names(file_path)
+        if not java_file_paths:
+            print("Found no java files, exiting")
+            exit(-1)
 
-    item = {
-        "id": os.path.basename(file_path),
-        "parent_ids": parent_ids,
-    }
+        file_objects = []
+        text_file = open("src/web/data/class_graph.txt", "w")
+        text_file.truncate()
 
-    # print(item)
+        text_file.write("digraph G {\n")
 
-    file_objects.append(item)
+        for file_path in java_file_paths:
+            parent_ids = get_parent_names(file_path)
+            class_name = os.path.basename(file_path)
+            class_name = class_name.replace(".java", "")
 
-print(file_objects)
+            for parent in parent_ids:
+                parent_fix = re.sub("<.*>", "", parent)
+                parent_fix = re.sub("[^\w\s]", "", parent_fix)
+                text_file.write("\t%s -> %s;\n" % (class_name, parent_fix))
 
+            item = {
+                "id": class_name,
+                "parent_ids": parent_ids,
+            }
+
+            file_objects.append(item)
+        text_file.write("}")
+        text_file.close()

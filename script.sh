@@ -1,21 +1,28 @@
 #!/usr/bin/env bash
-# generate JSON with class structures with functions
-# http://bl.ocks.org/d3noob/8375092
 
-python ./src/python/createClassDiagram.py &
+if [ $# -eq 0 ]
+  then
+    echo "No arguments supplied"
+fi
+
+echo $1
+
+python ./src/python/createClassDiagram.py -p $1 &
 P1=$!
 echo 'Running createClassDiagram.py to creating class diagram'
 
-python ./src/python/createUserDictionary.py &
+python ./src/python/createUserDictionary.py $1 &
 P2=$!
 
 echo 'Running createUserDictionary.py to creating user dictionary'
 wait $P1 $P2
 
-echo 'Done creating data, opening web page now'
+exit_status=0
+wait $P1; (( exit_status |= $? ))
+wait $P2; (( exit_status |= $? ))
 
-open ./src/web/index.html
+# if [ $exit_status -eq 0 ]
+#     then echo 'Done creating data, opening web page now' && open ./src/web/index.html
+# fi
 
-
-
-# open html which also runs JS
+exit $exit_status
