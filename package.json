@@ -2,18 +2,24 @@
     "name": "who-edited-my-code",
     "repository": "https://github.com/dj-wong/who-edited-my-code.git",
     "dependencies": {
+        "@google/maps": "^0.5.5",
+        "@octokit/rest": "^16.0.1",
         "concurrently": "^4.0.1",
+        "git-contributors": "^0.2.3",
         "http-server": "^0.11.1",
+        "nodegit": "^0.23.0",
         "wait-on": "^3.2.0"
     },
     "engines": {
         "node": ">= 0.4.1"
     },
     "scripts": {
-        "run-python-script": "./script.sh",
+        "gen-data": "bash -c 'concurrently \"npm run generate-user-dictionary ${0}\" \"npm run generate-class-structure ${0}\" ' ",
+        "generate-user-dictionary": "node src/gen-data/js/createUserDictionary.js",
+        "generate-class-structure": "./script.sh",
         "start-server": "cd src/web && http-server -c-1",
         "open": "concurrently 'npm run start-server' 'wait-on http://localhost:8080/ && open http://localhost:8080/'",
-        "concurrently-parse-open-server": "func() { npm run run-python-script \"$1\" && npm run open; }; func",
-        "start": "npm run concurrently-parse-open-server"
+        "start-all": "func() { npm run gen-data \"$1\" && npm run open; }; func",
+        "start": "npm run open"
     }
 }
