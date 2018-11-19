@@ -3,6 +3,8 @@ print("Create User Dictionary")
 # git log --pretty=format:%ae | grep '.*' | sort --unique
 # The list of user email passed in by script.sh
 # curl https://api.github.com/search/users?q=email@email.com+in:email
+#TODO: use the second end point below with username
+# https://api.github.com/users/<username>
 
 import git
 import sys
@@ -18,7 +20,7 @@ path = sys.argv[1]
 userDictionary = {"users_location": {}, "users_no_location":{}}
 
 def addToUserDictitorary(user, searchTerm):
-    #TODO test users with locations from github API
+    #TODO use the second end point here or earlier lol
     if user["total_count"] == 1:
         if "location" in user["items"][0] :
             userDictionary["users_location"][searchTerm] = user["items"][0]
