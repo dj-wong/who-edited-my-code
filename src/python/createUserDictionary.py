@@ -19,13 +19,14 @@ print ("The arguments are: " , str(sys.argv))
 path = sys.argv[1]
 userDictionary = {"users_location": {}, "users_no_location":{}}
 
-def addToUserDictitorary(user, searchTerm):
-    #TODO use the second end point here or earlier lol
-    if user["total_count"] == 1:
-        if "location" in user["items"][0] :
-            userDictionary["users_location"][searchTerm] = user["items"][0]
-        else:
-            userDictionary["users_no_location"][searchTerm] = user["items"][0]
+def addToUserDictitorary(username):
+    res = requests.get('https://api.github.com/users/'+username)
+    user = json.loads(res.text)
+
+    if "location" in user :
+        userDictionary["users_location"][username] = user
+    else:
+        userDictionary["users_no_location"][username] = user
 
 g = git.Git(path)
 lograw = g.log()
@@ -39,11 +40,13 @@ for email in emails:
     m = re.search('(.+?)@users.noreply.github.com', email)
     if m :
         username = m.group(1)
-        searchTerm = username
+        addToUserDictitorary(username)
     #welp too bad we search using email
     else:
-        searchTerm = email
-    res = requests.get('https://api.github.com/search/users?q='+searchTerm)
-    user = json.loads(res.text)
-    addToUserDictitorary(user, searchTerm)
+        res = requests.get('https://api.github.com/search/users?q='+email)
+        userSearch = json.loads(res.text)
+        if userSearch["total_count"] > 0:
+            username = userSearch["items"][0]["login"]
+            addToUserDictitorary(username)
+
 print(userDictionary)
