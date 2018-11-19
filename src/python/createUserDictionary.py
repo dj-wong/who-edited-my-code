@@ -43,7 +43,8 @@ for email in emails:
         addToUserDictitorary(username)
     #welp too bad we search using email
     else:
-        res = requests.get('https://api.github.com/search/users?q='+email)
+        res = requests.get('https://api.github.com/search/users?q='+email+"+in:email")
+        #this api is kinda unreliable as of now
         userSearch = json.loads(res.text)
         if userSearch["total_count"] > 0:
             username = userSearch["items"][0]["login"]
