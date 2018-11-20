@@ -81,8 +81,9 @@ if __name__ == '__main__':
     path = io_args.path
 
     if path != "":
+
         java_file_paths = glob.glob(
-            "../fastjson/src/main/**/*.java", recursive=True)
+            path + "/src/main/**/*.java", recursive=True)
 
         if not java_file_paths:
             print("Found no java files, exiting")
@@ -112,3 +113,6 @@ if __name__ == '__main__':
             file_objects.append(item)
         text_file.write("}")
         text_file.close()
+    
+    else:
+        print("Empty String as path passed in, exiting...")  

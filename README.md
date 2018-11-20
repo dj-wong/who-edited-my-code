@@ -8,12 +8,18 @@ Requirements include:
 
 Once you have these, set the following environment variables by adding these to your `.bash_profile or .bash_rc`:
 ```
-GITHUB_KEY=${Github Token here}; export GITHUB_KEY
+GITHUB_TOKEN=${Github Token here}; export GITHUB_TOKEN
 GMAPS_API_KEY=${Google Maps Key here}; export GMAPS_API_KEY
 ```
 
 ## Installation
 Run `npm install` to download all dependencies.
+
+To install python dependencies, it is suggested to use a virtualenv. After, run:
+```
+cd src/gen-data/python
+pip install -r requirements.txt
+```
 
 ## Usage
 There are multiple commands that you can run.
