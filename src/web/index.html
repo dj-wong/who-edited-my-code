@@ -22,9 +22,10 @@
 <body>
   <header class="navbar navbar-dark bg-dark justify-content-between">
     <a class="navbar-brand" href="#">Who edited my code!</a>
-    <span class="navbar-text">
-      Visualizing: ${}
-    </span>
+    <a class="navbar-text repo-link" href="" target="_blank">
+        Visualizing: 
+        <span class="repo-name"></span>
+    </a> 
     <form class="form-inline">
       <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
@@ -52,6 +53,8 @@
     </div>
   </div>
   <script src="js/index.js"></script>
+  <script src="js/graph.js"></script>
+  <script src="js/navbar.js"></script>
   <script src="https://maps.googleapis.com/maps/api/js?key=INSERT_KEY&callback=initMap" async defer></script>
 </body>
 

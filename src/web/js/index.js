@@ -1,31 +1,49 @@
 (function () {
-    const graphviz = d3.select(".svg-container").graphviz();
-    const t = d3.transition()
-        .duration(750)
-        .ease(d3.easeLinear);
-
-    const graphData = new Promise((resolve, reject) => {
-        jQuery.get('http://localhost:8080/data/class_graph.txt', data => {
+    const classGraph = new Promise((resolve, reject) => {
+        $.get('http://localhost:8080/data/class_graph.txt', data => {
             resolve(data);
         });
     });
 
-    function renderGraph() {
-        Promise.resolve(graphData).then(data => {
-            const windowWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-            const windowHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0) - 80; // hard code navbar here...
-            const width = windowWidth;
-            const height = windowHeight;
-
-            graphviz
-                .width(width)
-                .height(height)
-                .fit(true)
-                .engine("circo")
-                .renderDot(data);
+    const classData = new Promise((resolve, reject) => {
+        $.getJSON('http://localhost:8080/data/class_data.json', json => {
+            resolve(json);
         });
-    }
+    }); 
 
-    renderGraph();
-    window.addEventListener("resize", renderGraph);
+    const repoData = new Promise((resolve, reject) => {
+        $.getJSON('http://localhost:8080/data/repo_data.json', json => {
+            resolve(json);
+        });
+    }); 
+
+    window.WhoEditedMyCode = {
+        // Graph "Class", handles Graph lifecycle
+        getGraph() {
+            this.console.log("not implemented, something went wrong");  
+        },
+
+        // NavBar "Class", handles NavBar lifecycle
+        getNavBar:function() {
+            this.console.log("not implemented, something went wrong");
+        },
+
+        // Modal "Class", handles Modal lifecycle
+        getModal:function() {
+            this.console.log("not implemented, something went wrong");
+        },
+
+        // data getters
+        getClassGraphData:function() {
+            return classGraph;
+        },
+        getRepoData:function() {
+            return repoData;
+        },
+        getClassData:function() {
+            return classData;
+        }
+
+
+    }
 })();
