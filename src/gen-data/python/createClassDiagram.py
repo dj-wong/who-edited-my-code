@@ -11,7 +11,8 @@ def get_parent_names(filepath):
     file.close()
 
     for index, line in enumerate(lines):
-        if "public class" in line or "private class" in line:
+        is_class = re.search("(public|private).*class", line) is not None
+        if is_class:
             # To account for class declarations longer than one line
             current_index_to_check = index + 1
             current_line = line

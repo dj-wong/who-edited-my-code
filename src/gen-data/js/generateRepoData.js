@@ -45,6 +45,18 @@
         })
     );
 
+    const getGeoCodeLocation = function(location) {
+        return googleMapsClient.geocode({
+            address: location
+        }).asPromise().then(response => {
+            const results = response.json.results;
+            if (results && results.length > 0) {
+                return results[0].geometry;
+            }
+            return null;
+        });
+    }
+
     const repoProm = Promise.resolve(repoOwnerAndName).then(ownerAndName => {
         if (ownerAndName && ownerAndName.indexOf("/") !== -1) {
             const [owner, repo] = ownerAndName.split("/");
@@ -61,11 +73,27 @@
                         username: owner.login
                     }).then(ownerResponse => {
                         const ownerData = ownerResponse.data;
-                        if (ownerData) {
+                        if (ownerData && ownerData.location) {
+                            return getGeoCodeLocation(ownerData.location).then(geometry => {
+                                if (geometry) {
+                                    ownerData.geometry = geometry;
+                                }
+                                return {
+                                    repo: repoData,
+                                    owner: ownerData
+                                };
+                            }).catch(err => {
+                                console.log(err);
+                                console.log(`Had issue checking ${ownerData.login}, falling back to not adding location...`);
+                                return {
+                                    repo: repoData,
+                                    owner: ownerData,
+                                };
+                            });
+                        } else {
                             return {
-                                repo: repoData,
-                                owner: ownerData
-                            }
+                                repo: repoData
+                            };
                         }
                     })
                 }
@@ -86,13 +114,10 @@
                                     username: contributor.login
                                 }).then(userDataResponse => {
                                     const userData = userDataResponse.data;
-                                    if (userData.location) {
-                                        return googleMapsClient.geocode({
-                                            address: userData.location
-                                        }).asPromise().then(response => {
-                                            const results = response.json.results;
-                                            if (results && results.length > 0) {
-                                                userData.geometry = results[0].geometry;
+                                    if (userData && userData.location) {
+                                        return getGeoCodeLocation(userData.location).then(geometry => {
+                                            if (geometry) {
+                                                userData.geometry = geometry;
                                             }
                                             return userData;
                                         }).catch(err => {

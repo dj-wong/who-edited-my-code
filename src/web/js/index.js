@@ -20,17 +20,22 @@
     window.WhoEditedMyCode = {
         // Graph "Class", handles Graph lifecycle
         getGraph() {
-            this.console.log("not implemented, something went wrong");  
+            console.log("not implemented, something went wrong");  
         },
 
         // NavBar "Class", handles NavBar lifecycle
         getNavBar:function() {
-            this.console.log("not implemented, something went wrong");
+            console.log("not implemented, something went wrong");
         },
 
         // Modal "Class", handles Modal lifecycle
         getModal:function() {
-            this.console.log("not implemented, something went wrong");
+            console.log("not implemented, something went wrong");
+        },
+
+        // MapController "Class", handles Map lifecycle
+        getMapController: function() {
+            console.log("not implemented, something went wrong");
         },
 
         // data getters

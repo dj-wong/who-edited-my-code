@@ -35,7 +35,7 @@
     <div class="svg-container"></svg>
   </div>
   <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
@@ -44,7 +44,8 @@
           </button>
         </div>
         <div class="modal-body">
-          ...
+          <div class="alert alert-warning map-warning" role="alert" hidden></div>
+          <div id="map"></div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -55,7 +56,9 @@
   <script src="js/index.js"></script>
   <script src="js/graph.js"></script>
   <script src="js/navbar.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=INSERT_KEY&callback=initMap" async defer></script>
+  <script src="js/modal.js"></script>
+  <script src="js/map.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=API_KEY&callback=initMap" async defer></script>
 </body>
 
 </html>
