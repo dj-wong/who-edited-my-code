@@ -4,9 +4,7 @@ import re
 from git import Repo
 from github import Github
 
-def __generate_dict(gh, path):
-        repo = Repo(path)
-
+def generate_dict(gh, repo):
         repo_repo_url = repo.remotes.origin.url
         repo_name = re.search(":(.*).git", repo_repo_url).group(1)
         print("Querying against %s github repository..." % repo_name)
@@ -51,7 +49,7 @@ def __generate_dict(gh, path):
         print(email_user_dict)
         return email_user_dict
 
-def get_email_user_dict(path):
+def get_email_user_dict(repo):
     GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
 
     if GITHUB_TOKEN is None:
@@ -60,23 +58,43 @@ def get_email_user_dict(path):
 
     dictionary = None
 
-    if path != "":
+    if repo is not None:
         gh = Github(GITHUB_TOKEN)
-        dictionary = __generate_dict(gh, path)
+        dictionary = generate_dict(gh, repo)
     else:
-        print("Empty String as path passed in, exiting...")  
+        print("Repo not passed in, exiting...")  
         exit(1)
     
     return dictionary
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-p', '--path', required=True)
+class EmailUserDictionary():
+    def __init__(self):
+        self.email_user_dictionary = None
+        self.repo = None
+    
+    def generate_email_user_dictionary(self, path):
+        self.repo = Repo(path)
+        self.email_user_dictionary = get_email_user_dict(self.repo)
 
-    io_args = parser.parse_args()
-    path = io_args.path
+    def get_user_with_email(self, email):
+        user_login = None
+        if self.email_user_dictionary is not None:
+            user_login = self.email_user_dictionary.get(email)
+        
+        return user_login
+        
+    def get_committers_for_file(self, file_path):
+        print("getting committers for: %s" % file_path)
+        
+        emails = set()
+        for commit, _lines in self.repo.blame("HEAD", file_path):
+            emails.add(commit.committer.email)
+        
+        user_logins = set()
+        for email in emails:
+            user_login = self.get_user_with_email(email)
+            if user_login is not None:
+                user_logins.add(user_login)
 
-    print("Not the intended way of using it, not saving results to disk")
-    print("But here's the result:")
-    print(get_email_user_dict(path))
+        return list(user_logins)

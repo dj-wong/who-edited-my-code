@@ -2,6 +2,8 @@ import os
 import glob
 import re
 import argparse
+import json
+from emailUserDictionary import EmailUserDictionary
 
 def get_parent_names(filepath):
     file = open(filepath)
@@ -89,7 +91,11 @@ if __name__ == '__main__':
             print("Found no java files, exiting")
             exit(-1)
 
-        file_objects = []
+        class_data = dict()
+
+        emailUserDict = EmailUserDictionary()
+        emailUserDict.generate_email_user_dictionary(path)
+
         text_file = open("src/web/data/class_graph.txt", "w")
         text_file.truncate()
 
@@ -105,14 +111,22 @@ if __name__ == '__main__':
                 parent_fix = re.sub("[^\w\s]", "", parent_fix)
                 text_file.write("\t%s -> %s;\n" % (class_name, parent_fix))
 
-            item = {
-                "id": class_name,
-                "parent_ids": parent_ids,
+            abs_path = os.path.abspath(file_path)
+            file_committers = emailUserDict.get_committers_for_file(abs_path)
+            if not file_committers:
+                file_committers = []
+
+            file_details = {
+                "name": class_name,
+                "committers": file_committers
             }
 
-            file_objects.append(item)
+            class_data[class_name] = file_details
         text_file.write("}")
         text_file.close()
+
+        with open('src/web/data/class_data.json', 'w') as fp:
+            json.dump(class_data, fp, sort_keys=True, indent=2)
     
     else:
         print("Empty String as path passed in, exiting...")  
