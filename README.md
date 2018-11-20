@@ -29,10 +29,10 @@ Generates data for the git repo that is passed in:
 npm run gen-data "${Path to git repo}"
 ```
 
-If you would like to generate the class structure or the user dictionary separately use:
+If you would like to generate the class structure or the repo data separately use:
 ```
 npm run generate-class-structure "${PATH_TO_GIT_REPO}"
-npm run generate-user-dictionary "${PATH_TO_GIT_REPO}"
+npm run generate-repo-data "${PATH_TO_GIT_REPO}"
 ```
 
 To launch the webapp to visualize your data:

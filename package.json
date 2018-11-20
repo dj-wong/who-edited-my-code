@@ -14,8 +14,8 @@
         "node": ">= 0.4.1"
     },
     "scripts": {
-        "gen-data": "bash -c 'concurrently \"npm run generate-user-dictionary ${0}\" \"npm run generate-class-structure ${0}\" ' ",
-        "generate-user-dictionary": "node src/gen-data/js/createUserDictionary.js",
+        "gen-data": "bash -c 'concurrently \"npm run generate-repo-data ${0}\" \"npm run generate-class-structure ${0}\" ' ",
+        "generate-repo-data": "node src/gen-data/js/generateRepoData.js",
         "generate-class-structure": "./script.sh",
         "start-server": "cd src/web && http-server -c-1",
         "open": "concurrently 'npm run start-server' 'wait-on http://localhost:8080/ && open http://localhost:8080/'",

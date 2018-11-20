@@ -7,8 +7,6 @@
     const GMAPS_API_KEY = process.env.GMAPS_API_KEY;
     const args = process.argv.slice(2);
 
-    console.log(args);
-
     if (args.length != 1) {
         console.error("Only supports 1 argument.");
         process.exit(1);
@@ -47,11 +45,33 @@
         })
     );
 
-    const contributorData = Promise.resolve(repoOwnerAndName).then(ownerAndName => {
+    const repoProm = Promise.resolve(repoOwnerAndName).then(ownerAndName => {
         if (ownerAndName && ownerAndName.indexOf("/") !== -1) {
             const [owner, repo] = ownerAndName.split("/");
-            console.log(`Getting contributors for ${owner}/${repo} now...`);
-            return octokit.repos.listContributors({
+            console.log(`Getting repo data for ${owner}/${repo} now...`);
+
+            const repoDataProm = octokit.repos.get({
+                owner, 
+                repo
+            }).then(repoDataResponse => {
+                const repoData = repoDataResponse.data;
+                if (repoData) {
+                    const owner = repoData.owner;
+                    return octokit.users.getByUsername({
+                        username: owner.login
+                    }).then(ownerResponse => {
+                        const ownerData = ownerResponse.data;
+                        if (ownerData) {
+                            return {
+                                repo: repoData,
+                                owner: ownerData
+                            }
+                        }
+                    })
+                }
+            });
+
+            const contributorsProm = octokit.repos.listContributors({
                 owner,
                 repo
             }).then(contributorsResponse => {
@@ -101,17 +121,26 @@
             }).catch(error => {
                 console.log(error);
             });
+
+            return Promise.all([repoDataProm, contributorsProm]);
         } else {
             throw "Invalid owner, repo";
         }
     });
 
     return new Promise((resolve, reject) => {
-        Promise.resolve(contributorData).then(data => {
-            if (data) {
-                const stringifiedData = JSON.stringify(data, null, 2);
+        Promise.resolve(repoProm).then(data => {
+            if (data && data.length == 2) {
+                const repoData = data[0];
+                const contributors = data[1];
+
+                const stringifiedData = JSON.stringify({
+                    repo: repoData.repo,
+                    owner: repoData.owner,
+                    contributors
+                }, null, 2);
                 console.log("Writing to src/web/data/userDictionary.json now...");
-                fs.writeFile("src/web/data/userDictionary.json", stringifiedData, "utf8", resolve);
+                fs.writeFile("src/web/data/repo_data.json", stringifiedData, "utf8", resolve);
             } else {
                 console.log("Something went wrong with generating data, not writing to file...");
                 resolve();
