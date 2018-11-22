@@ -5,6 +5,31 @@ import argparse
 import json
 from emailUserDictionary import EmailUserDictionary
 
+def get_function_from_line(line):
+    if line is not None:
+        function_in_line = re.search("(public|private)\s*(.*)\s*\(.*", line)
+        if function_in_line is not None:
+            # get last element in list of words, which is function name
+            return function_in_line.group(2).split()[-1]
+        else:
+            return None
+    else:
+        return None
+
+def get_class_functions(filepath):
+    file = open(filepath)
+    lines = file.readlines()
+    file.close()
+
+    functions_list = set()
+
+    for index, line in enumerate(lines):
+        retrieved_function = get_function_from_line(line)
+        if retrieved_function is not None:
+            functions_list.add(retrieved_function)
+
+    return functions_list
+
 def get_parent_names(filepath):
     file = open(filepath)
     lines = file.readlines()
@@ -103,26 +128,32 @@ if __name__ == '__main__':
         text_file.write("digraph G {\n")
 
         for file_path in java_file_paths:
-            parent_ids = get_parent_names(file_path)
-            class_name = os.path.basename(file_path)
-            class_name = class_name.replace(".java", "")
+            try:
+                parent_ids = get_parent_names(file_path)
+                class_name = os.path.basename(file_path)
+                class_name = class_name.replace(".java", "")
+                functions_in_class = get_class_functions(file_path)
 
-            for parent in parent_ids:
-                parent_fix = re.sub("<.*>", "", parent)
-                parent_fix = re.sub("[^\w\s]", "", parent_fix)
-                text_file.write("\t%s -> %s;\n" % (class_name, parent_fix))
+                for parent in parent_ids:
+                    parent_fix = re.sub("<.*>", "", parent)
+                    parent_fix = re.sub("[^\w\s]", "", parent_fix)
+                    text_file.write("\t%s -> %s;\n" % (class_name, parent_fix))
 
-            abs_path = os.path.abspath(file_path)
-            file_committers = emailUserDict.get_committers_for_file(abs_path)
-            if not file_committers:
-                file_committers = []
+                abs_path = os.path.abspath(file_path)
+                file_committers = emailUserDict.get_committers_for_file(abs_path)
+                if not file_committers:
+                    file_committers = []
 
-            file_details = {
-                "name": class_name,
-                "committers": file_committers
-            }
+                file_details = {
+                    "name": class_name,
+                    "committers": file_committers
+                }
 
-            class_data[class_name] = file_details
+                class_data[class_name] = file_details
+                class_data[class_name]["functions"] = list(functions_in_class)
+
+            except:
+                pass
         text_file.write("}")
         text_file.close()
 
