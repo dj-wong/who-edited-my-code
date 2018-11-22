@@ -18,20 +18,14 @@
             const classResults = results[1];
 
             const classData = classResults[title];
+            const mapController = WhoEditedMyCode.getMapController();
+                mapController.clearMap();
 
             if (classData) {
-                const mapController = WhoEditedMyCode.getMapController();
-                mapController.clearMap();
                 const ownerLocation = ownerData.geometry.location // owner MUST have latlng
                 const contributorsLogin = classData.committers;
 
-                const markers = [{
-                    type: "owner",
-                    location: ownerLocation,
-                    name: ownerData.name,
-                    id: ownerData.login,
-                    url: ownerData.html_url
-                }];
+                const markers = [];
                 const lines = [];
                 (contributorsLogin || []).forEach(login => {
                     const contributor = contributors[login];
@@ -47,9 +41,7 @@
                         markers.push({
                             type: "committer",
                             location: contributorGeometryLocation,
-                            name: contributor.name,
-                            id: contributor.login,
-                            url: contributor.html_url
+                            contributor
                         });
 
                         lines.push([

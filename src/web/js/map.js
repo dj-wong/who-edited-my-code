@@ -1,15 +1,38 @@
 (function() {
     let gmap;
+    let ownerMarker;
     let lines = [];
     let markers = []; 
     let latlngbounds;
-    
-    const vancouverLatLng = { lat: 49.246292, lng: -123.116226 }
+    const markerSize = 30;
+    const repoDataProm = Promise.resolve(WhoEditedMyCode.getRepoData());
 
     function initMap() {
         gmap = new google.maps.Map(document.getElementById("map"));
 
         latlngbounds = new google.maps.LatLngBounds(null);
+        return getOwnerAndPlot();
+    }
+
+    function getOwnerAndPlot() {
+        return Promise.resolve(repoDataProm).then(({repo, owner, contributors}) => {
+            const ownerLocation = owner.geometry.location // owner MUST have latlng
+            ownerMarker = new google.maps.Marker({
+                position: ownerLocation,
+                map: gmap,
+                icon: createIconWithUrl(owner.avatar_url)
+            });
+            return ownerMarker;
+        });
+    }
+
+    function createIconWithUrl(url) {
+        return {
+            url,
+            scaledSize: new google.maps.Size(markerSize, markerSize), // scaled size
+            origin: new google.maps.Point(0, 0), // origin
+            anchor: new google.maps.Point(markerSize/2, markerSize/2) // anchor
+        };
     }
 
     function addLinesToMap(map) {
@@ -25,9 +48,10 @@
     }
 
     function addMarkers(markersDetails) {
-        (markersDetails || []).forEach(({location}) => {
+        (markersDetails || []).forEach(({contributor, location}) => {
             const marker = new google.maps.Marker({
-                position: location
+                position: location,
+                icon: createIconWithUrl(contributor.avatar_url)
             });
             markers.push(marker);
             latlngbounds.extend(marker.getPosition());
@@ -78,9 +102,14 @@
     }
 
     function fitNewBounds() {
-        console.log("Before" + gmap.getBounds())
+        if (ownerMarker) {
+            latlngbounds.extend(ownerMarker.getPosition());
+        }
         gmap.fitBounds(latlngbounds);
-        console.log("After" + gmap.getBounds())
+
+        if (ownerMarker && lines.length < 1 && markers.length < 1) { // handle only owner marker
+            gmap.setZoom(10)
+        }
     }
 
     WhoEditedMyCode.getMapController = function() {
