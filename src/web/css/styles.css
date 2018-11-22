@@ -8,11 +8,34 @@ body {
     min-height: 100%;
 }
 
+.modal-xl {
+    width: 90% !important; 
+    max-width:1200px !important;
+}
+
 /* Always set the map height explicitly to define the size of the div
  * element that contains the map. */
 #map {
-    width: 100%;
-    height: 500px;
+    width: 70%;
+    height: 60vh;
+    float: left;
+    margin-right: 10px;
+}
+
+.class-details {
+    height: 60vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.class-details .card-body.accordian {
+    padding: 0.5rem;
+}
+
+.class-details-title {
+    background-color: white;
+    border-bottom: solid 1px #e9ecef;
+    padding-bottom: 5px;
 }
 
 .svg-container {

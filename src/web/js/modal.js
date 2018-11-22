@@ -1,11 +1,62 @@
 (function() {
     const $modal = $("#myModal");
     const $warningAlert = $modal.find(".map-warning");
+    const $classDetails = $modal.find(".class-details");
+    const $functionsCard = $modal.find("#functions-card-body");
+    const $contributorsCard = $modal.find("#contributors-card-body");
     const repoDataProm = Promise.resolve(WhoEditedMyCode.getRepoData());
     const classDataProm = Promise.resolve(WhoEditedMyCode.getClassData());
 
     const randomDifferences = [-0.1, -0.05, -0.025, -0.01, 0.01, 0.025, 0.05, 0.1];
     const numRandomDifferences = randomDifferences.length;
+
+
+    /* Start Class-Details Card */
+    const ContributorListEntry = ({ url, img, name, login }) => `
+        <a href="${url}" target="_blank" class="list-group-item list-group-item-action">
+            <img style="border-radius:0.25rem;"src="${img}&s=48"/>
+            <strong>${name}</strong><br>
+            <span>@${login}<span>
+            </div>        
+        </a>
+    `;
+    const setContributorsCard = function(htmlString) {
+        $contributorsCard.find(".list-group").html(htmlString);
+    }
+    const clearContributorsCard = function() {
+        setContributorsCard("");
+    }
+    const updateContributorsCard = function(contributors) {
+        const contributorsEntryDetails = contributors.map(({html_url, login, name, avatar_url}) => ({
+            url: html_url,
+            img: avatar_url,
+            name,
+            login
+        }));
+        setContributorsCard(contributorsEntryDetails.map(ContributorListEntry).join(''));
+    }
+    
+
+    const FunctionsListEntry = ({ functionName }) => `
+        <button type="button" class="list-group-item list-group-item-action">
+            ${functionName}
+        </button>
+    `;
+    const setFunctionsCard = function(htmlString) {
+        $functionsCard.find(".list-group").html(htmlString);
+    }
+    const clearFunctionsCard = function() {
+        setFunctionsCard("");
+    }
+    const updateFunctionsCard = function(functions) {
+        const functionsEntryDetails = functions.map(functionName => ({
+            functionName
+        }));
+        setFunctionsCard(functionsEntryDetails.map(FunctionsListEntry).join(''));
+    }
+
+    /* End Class-Details Card */
+    
 
     const updateModalTitle = function(title) {
         $modal.find(".modal-title").html(title)
@@ -13,22 +64,30 @@
 
     const updateModalContent = function(title) {
         $warningAlert.attr("hidden", true);
+        clearFunctionsCard();
+        clearContributorsCard();
         Promise.all([repoDataProm, classDataProm]).then(results => {
             const {repo:repoData, owner:ownerData, contributors} = results[0];
             const classResults = results[1];
 
             const classData = classResults[title];
             const mapController = WhoEditedMyCode.getMapController();
-                mapController.clearMap();
+            mapController.clearMap();
 
             if (classData) {
                 const ownerLocation = ownerData.geometry.location // owner MUST have latlng
                 const contributorsLogin = classData.committers;
+                const classFunctions = classData.functions;
 
                 const markers = [];
                 const lines = [];
+                const contributorsList = [];
                 (contributorsLogin || []).forEach(login => {
                     const contributor = contributors[login];
+                    if (contributor) {
+                        contributorsList.push(contributor); // for contributors card
+                    }
+
                     if (contributor && contributor.geometry && contributor.geometry.location) {
                         let contributorGeometryLocation = contributor.geometry.location;
                         if (sameLatLng(contributorGeometryLocation, ownerLocation)) {
@@ -50,6 +109,9 @@
                         ]);
                     }
                 });
+
+                updateContributorsCard(contributorsList);
+                updateFunctionsCard(classFunctions);
                 
                 mapController.addMarkersAndLines({
                     lines,

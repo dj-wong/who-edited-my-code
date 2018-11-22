@@ -23,9 +23,9 @@
   <header class="navbar navbar-dark bg-dark justify-content-between">
     <a class="navbar-brand" href="#">Who edited my code!</a>
     <a class="navbar-text repo-link" href="" target="_blank">
-        Visualizing: 
-        <span class="repo-name"></span>
-    </a> 
+      Visualizing:
+      <span class="repo-name"></span>
+    </a>
     <form class="form-inline">
       <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
@@ -33,32 +33,71 @@
   </header>
   <div class="container-fluid">
     <div class="svg-container"></svg>
-  </div>
-  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="alert alert-warning map-warning" role="alert" hidden></div>
-          <div id="map"></div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    </div>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-xl" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="alert alert-warning map-warning" role="alert" hidden></div>
+            <div>
+              <div id="map"></div>
+              <div class="class-details">
+                <h5 class="class-details-title sticky-top">Class Details</h5>
+                <div class="card-body accordian" id="class-details-accordion">
+                  <div class="card">
+                    <div class="card-header" id="functions-card-header">
+                      <h5 class="mb-0">
+                        <button class="btn btn-link" data-toggle="collapse" data-target="#functions-card-body" aria-expanded="true"
+                          aria-controls="collapseOne">
+                          Functions
+                        </button>
+                      </h5>
+                    </div>
+                    <div id="functions-card-body" class="collapse functions-card" aria-labelledby="functions-card-header" data-parent="#class-details-accordion">
+                      <div class="card-body">
+                        <div class="list-group"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card">
+                    <div class="card-header" id="contributors-card-header">
+                      <h5 class="mb-0">
+                        <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#contributors-card-body"
+                          aria-expanded="false" aria-controls="collapseTwo">
+                          Contributors
+                        </button>
+                      </h5>
+                    </div>
+                    <div id="contributors-card-body" class="collapse" aria-labelledby="contributors-card-header" data-parent="#class-details-accordion">
+                      <div class="card-body">
+                        <div class="list-group list-group-item-action"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <script src="js/index.js"></script>
-  <script src="js/graph.js"></script>
-  <script src="js/navbar.js"></script>
-  <script src="js/modal.js"></script>
-  <script src="js/map.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDKnPQGv7Cf1UhviyDRkrSyFS8vyqIaaH0&callback=initMap" async defer></script>
+    <script src="js/index.js"></script>
+    <script src="js/graph.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/modal.js"></script>
+    <script src="js/map.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=API_KEY&callback=initMap"
+      async defer></script>
+
 </body>
 
 </html>

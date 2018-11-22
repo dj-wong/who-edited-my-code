@@ -8,7 +8,9 @@
     const repoDataProm = Promise.resolve(WhoEditedMyCode.getRepoData());
 
     function initMap() {
-        gmap = new google.maps.Map(document.getElementById("map"));
+        gmap = new google.maps.Map(document.getElementById("map"), {
+            streetViewControl: false,
+        });
 
         latlngbounds = new google.maps.LatLngBounds(null);
         return getOwnerAndPlot();
@@ -20,7 +22,8 @@
             ownerMarker = new google.maps.Marker({
                 position: ownerLocation,
                 map: gmap,
-                icon: createIconWithUrl(owner.avatar_url)
+                icon: createIconWithUrl(owner.avatar_url),
+                zIndex: 999
             });
             return ownerMarker;
         });
