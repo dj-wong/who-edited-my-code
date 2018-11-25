@@ -33,6 +33,7 @@
                             .on("end", () => {
                                 nodes = d3.selectAll(".node")
                                 nodes.on("click", onNodeClick);
+                                $(d3.select("svg").node()).find(".graph title:first").html("");
                                 resolve();
                             });
                     });

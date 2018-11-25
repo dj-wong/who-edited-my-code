@@ -128,7 +128,7 @@ if __name__ == '__main__':
         text_file = open("src/web/data/class_graph.txt", "w")
         text_file.truncate()
 
-        text_file.write("digraph G {\n")
+        text_file.write("digraph {\n")
 
         for file_path in java_file_paths:
             try:

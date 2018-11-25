@@ -45,17 +45,34 @@
         })
     );
 
+    const getTimeZoneLocation = function({lat, lng}) {
+        return googleMapsClient.timezone({
+            location: {lat, lng}
+        }).asPromise().then(response => {
+            const results = response.json;
+            return results;
+        }).catch(error => {
+            console.log(error);
+        });
+    }
+
     const getGeoCodeLocation = function(location) {
         return googleMapsClient.geocode({
             address: location
         }).asPromise().then(response => {
             const results = response.json.results;
             if (results && results.length > 0) {
-                return results[0].geometry;
+                const geometry = results[0].geometry;
+                const location = geometry.location;
+                return getTimeZoneLocation(location).then(timezone => ({
+                    geometry,
+                    timezone
+                }));
             }
             return null;
         });
     }
+
 
     const repoProm = Promise.resolve(repoOwnerAndName).then(ownerAndName => {
         if (ownerAndName && ownerAndName.indexOf("/") !== -1) {
@@ -74,9 +91,12 @@
                     }).then(ownerResponse => {
                         const ownerData = ownerResponse.data;
                         if (ownerData && ownerData.location) {
-                            return getGeoCodeLocation(ownerData.location).then(geometry => {
+                            return getGeoCodeLocation(ownerData.location).then(({geometry, timezone}) => {
                                 if (geometry) {
                                     ownerData.geometry = geometry;
+                                }
+                                if (timezone) {
+                                    ownerData.timezone = timezone;
                                 }
                                 return {
                                     repo: repoData,
@@ -115,9 +135,12 @@
                                 }).then(userDataResponse => {
                                     const userData = userDataResponse.data;
                                     if (userData && userData.location) {
-                                        return getGeoCodeLocation(userData.location).then(geometry => {
+                                        return getGeoCodeLocation(userData.location).then(({geometry, timezone}) => {
                                             if (geometry) {
                                                 userData.geometry = geometry;
+                                            }
+                                            if (timezone) {
+                                                userData.timezone = timezone;
                                             }
                                             return userData;
                                         }).catch(err => {

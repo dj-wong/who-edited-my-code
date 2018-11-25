@@ -17,13 +17,13 @@ body {
  * element that contains the map. */
 #map {
     width: 70%;
-    height: 60vh;
+    height: 70vh;
     float: left;
     margin-right: 10px;
 }
 
 .class-details {
-    height: 60vh;
+    height: 70vh;
     overflow-y: scroll;
     overflow-x: hidden;
 }
@@ -36,6 +36,19 @@ body {
     background-color: white;
     border-bottom: solid 1px #e9ecef;
     padding-bottom: 5px;
+}
+
+#functions-card-body .card-body {
+    padding: 0.75rem;
+}
+
+#contributors-card-body .card-body {
+    padding: 0.75rem;
+}
+
+g.node {
+    pointer-events: bounding-box;
+    cursor: pointer;
 }
 
 .svg-container {

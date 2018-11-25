@@ -12,14 +12,21 @@
 
 
     /* Start Class-Details Card */
-    const ContributorListEntry = ({ url, img, name, login }) => `
+    const ContributorListEntry = ({ url, img, name, login, localTimeString }) => `
         <a href="${url}" target="_blank" class="list-group-item list-group-item-action">
             <div>
                 <img style="border-radius:0.25rem;"src="${img}&s=48"/>
                 <strong>${name}</strong>
             </div>
-            <span>@${login}<span>
-            <i class="fas fa-external-link-alt"></i>     
+            <div>
+                <span>@${login}</span>
+                <i class="fas fa-external-link-alt"></i>
+            </div>
+              
+            <p class="card-text">
+                <small class="text-muted">${localTimeString}</small>
+            </p>
+               
         </a>
     `;
     const setContributorsCard = function(htmlString) {
@@ -29,12 +36,20 @@
         setContributorsCard("");
     }
     const updateContributorsCard = function(contributors) {
-        const contributorsEntryDetails = contributors.map(({html_url, login, name, avatar_url}) => ({
-            url: html_url,
-            img: avatar_url,
-            name: name || "N/A",
-            login: login || "N/A"
-        }));
+        const contributorsEntryDetails = contributors.map(({html_url, login, name, avatar_url, timezone}) => {
+            let localTimeString = "";
+            if (timezone) {
+                localTimeString = moment.tz(timezone.timeZoneId).format("MMM Do YYYY, h:mm:ss A");
+                localTimeString = `Local Time: ${localTimeString}`
+            }
+            return {
+                url: html_url,
+                img: avatar_url,
+                name: name || "N/A",
+                login: login || "N/A",
+                localTimeString
+            }
+        });
         setContributorsCard(contributorsEntryDetails.map(ContributorListEntry).join(''));
     }
     
@@ -63,7 +78,7 @@
             repoFullName,
             filePath: filePathRemoveSlash
         }));
-        
+
         setFunctionsCard(functionsEntryDetails.map(FunctionsListEntry).join(''));
     }
 

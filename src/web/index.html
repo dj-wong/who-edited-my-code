@@ -18,20 +18,28 @@
     crossorigin="anonymous"></script>
   <script src="https://unpkg.com/viz.js@1.8.0/viz.js" type="javascript/worker"></script>
   <script src="https://unpkg.com/d3-graphviz@2.6.0/build/d3-graphviz.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.23/moment-timezone-with-data.min.js"></script>
 </head>
 
 <body>
   <header class="navbar navbar-dark bg-dark justify-content-between">
-    <a class="navbar-brand" href="#">Who edited my code!</a>
-    <a class="navbar-text repo-link" href="" target="_blank">
+    <a class="navbar-brand order-1" href="#">Who edited my code!</a>
+    <a class="navbar-text repo-link order-2" href="" target="_blank">
       Visualizing:
       <span class="repo-name"></span>
       <i class="fas fa-external-link-alt"></i>  
     </a>
-    <form class="form-inline">
+    <form hidden class="form-inline">
       <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
       <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
     </form>
+    <span class="order-3">
+      <a class="navbar-text github-link" href="https://github.com/dj-wong/who-edited-my-code" target="_blank">
+        <i class="fab fa-github"></i>
+      </a>
+    </span>
+    
   </header>
   <div class="container-fluid">
     <div class="svg-container"></svg>
