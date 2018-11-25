@@ -14,10 +14,12 @@
     /* Start Class-Details Card */
     const ContributorListEntry = ({ url, img, name, login }) => `
         <a href="${url}" target="_blank" class="list-group-item list-group-item-action">
-            <img style="border-radius:0.25rem;"src="${img}&s=48"/>
-            <strong>${name}</strong><br>
+            <div>
+                <img style="border-radius:0.25rem;"src="${img}&s=48"/>
+                <strong>${name}</strong>
+            </div>
             <span>@${login}<span>
-            </div>        
+            <i class="fas fa-external-link-alt"></i>     
         </a>
     `;
     const setContributorsCard = function(htmlString) {
@@ -30,17 +32,18 @@
         const contributorsEntryDetails = contributors.map(({html_url, login, name, avatar_url}) => ({
             url: html_url,
             img: avatar_url,
-            name,
-            login
+            name: name || "N/A",
+            login: login || "N/A"
         }));
         setContributorsCard(contributorsEntryDetails.map(ContributorListEntry).join(''));
     }
     
 
-    const FunctionsListEntry = ({ functionName }) => `
-        <button type="button" class="list-group-item list-group-item-action">
-            ${functionName}
-        </button>
+    const FunctionsListEntry = ({ functionName, repoFullName, filePath, line }) => `
+        <a href="https://github.com/${repoFullName}/blame/master/${filePath}#L${line}" target="_blank" class="list-group-item list-group-item-action">
+            <span>${functionName}</span>
+            <i class="fas fa-external-link-alt"></i>  
+        </a>
     `;
     const setFunctionsCard = function(htmlString) {
         $functionsCard.find(".list-group").html(htmlString);
@@ -48,10 +51,19 @@
     const clearFunctionsCard = function() {
         setFunctionsCard("");
     }
-    const updateFunctionsCard = function(functions) {
-        const functionsEntryDetails = functions.map(functionName => ({
-            functionName
+    const updateFunctionsCard = function(functions, repoFullName, filePath) {
+        let filePathRemoveSlash = filePath;
+        if (filePath[0] === "/") {
+            filePathRemoveSlash = filePath.substring(1);
+        }
+
+        const functionsEntryDetails = functions.map(({functionName, line}) => ({
+            line,
+            functionName,
+            repoFullName,
+            filePath: filePathRemoveSlash
         }));
+        
         setFunctionsCard(functionsEntryDetails.map(FunctionsListEntry).join(''));
     }
 
@@ -78,6 +90,7 @@
                 const ownerLocation = ownerData.geometry.location // owner MUST have latlng
                 const contributorsLogin = classData.committers;
                 const classFunctions = classData.functions;
+                const filePath = classData.filepath;
 
                 const markers = [];
                 const lines = [];
@@ -111,7 +124,7 @@
                 });
 
                 updateContributorsCard(contributorsList);
-                updateFunctionsCard(classFunctions);
+                updateFunctionsCard(classFunctions, repoData.full_name, filePath);
                 
                 mapController.addMarkersAndLines({
                     lines,

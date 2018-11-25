@@ -7,7 +7,7 @@ from emailUserDictionary import EmailUserDictionary
 
 def get_function_from_line(line):
     if line is not None:
-        function_in_line = re.search("(public|private)\s*(.*)\s*\(.*", line)
+        function_in_line = re.search("(public|private|static|protected)\s*(.*)\s*\(.*", line)
         if function_in_line is not None:
             # get last element in list of words, which is function name
             return function_in_line.group(2).split()[-1]
@@ -21,14 +21,17 @@ def get_class_functions(filepath):
     lines = file.readlines()
     file.close()
 
-    functions_list = set()
+    functions_dict = []
 
     for index, line in enumerate(lines):
         retrieved_function = get_function_from_line(line)
         if retrieved_function is not None:
-            functions_list.add(retrieved_function)
+            functions_dict.append({
+                "line": index + 1,
+                "functionName": retrieved_function
+            })
 
-    return functions_list
+    return functions_dict
 
 def get_parent_names(filepath):
     file = open(filepath)
@@ -146,11 +149,12 @@ if __name__ == '__main__':
 
                 file_details = {
                     "name": class_name,
-                    "committers": file_committers
+                    "committers": file_committers,
+                    "functions": functions_in_class,
+                    "filepath": re.sub(path, "", file_path)
                 }
 
                 class_data[class_name] = file_details
-                class_data[class_name]["functions"] = list(functions_in_class)
 
             except:
                 pass
